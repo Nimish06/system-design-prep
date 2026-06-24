@@ -1,40 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Page Router — Rendering Patterns
 
-## Getting Started
+A Next.js app using the **Pages Router** to demonstrate and compare three core rendering strategies: CSR, SSR, and SSG.
 
-First, run the development server:
+## What This Covers
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+| Pattern | File | Description |
+|---|---|---|
+| **CSR** — Client Side Rendering | `src/pages/csr-page.js` | Data fetched in browser using `useEffect` after page loads |
+| **SSR** — Server Side Rendering | `src/pages/ssr-page.js` | Data fetched on server on every request via `getServerSideProps` |
+| **SSG** — Static Site Generation | `src/pages/ssg-page.js` | Data fetched at build time via `getStaticProps` |
+
+## How Each Pattern Works
+
+### CSR (`/csr-page`)
+The page shell loads immediately, then data is fetched client-side using `useEffect`. Users see a loading state until the fetch completes.
+```js
+useEffect(() => {
+  fetch('http://localhost:4000/tutorials').then(...)
+}, []);
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### SSR (`/ssr-page`)
+Data is fetched on the server on every request. The fully rendered HTML is sent to the browser — no loading state.
+```js
+export async function getServerSideProps() {
+  const res = await fetch('http://localhost:4000/tutorials');
+  return { props: { videos: await res.json() } }
+}
+```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### SSG (`/ssg-page`)
+Data is fetched once at build time. The page is pre-rendered as static HTML — fastest possible load, but data can go stale.
+```js
+export async function getStaticProps() {
+  const res = await fetch('http://localhost:4000/tutorials');
+  return { props: { videos: await res.json() } }
+}
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## Setup & Run
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+App runs at `http://localhost:3000`
 
-## Learn More
+> Make sure a data API is running at `http://localhost:4000/tutorials` before visiting the pages.
 
-To learn more about Next.js, take a look at the following resources:
+## Routes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+- `http://localhost:3000` — Home
+- `http://localhost:3000/csr-page` — Client Side Rendering
+- `http://localhost:3000/ssr-page` — Server Side Rendering
+- `http://localhost:3000/ssg-page` — Static Site Generation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- Next.js (Pages Router)
+- React
+- Tailwind CSS
