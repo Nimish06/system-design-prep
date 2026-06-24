@@ -17,7 +17,7 @@ app.use(cors(corsOptions));
 app.get('/list', (req, res) => {
  res.send([{
  id: 1,
- title: 'Namaste Frontend System Design'
+ title: 'Frontend System Design'
  }])
  })
 const port = process.env.PORT || 5010;
